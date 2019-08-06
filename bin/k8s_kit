@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+require 'gli'
+begin # XXX: Remove this begin/rescue before distributing your app
+require 'k8s_kit'
+rescue LoadError
+  STDERR.puts "In development, you need to use `bundle exec bin/k8s_kit` to run your app"
+  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
+  STDERR.puts "Feel free to remove this message from bin/k8s_kit now"
+  exit 64
+end
+
+class App
+  extend GLI::App
+
+  program_desc 'Describe your application here'
+
+  version K8sKit::VERSION
+
+  subcommand_option_handling :normal
+  arguments :strict
+
+  desc 'Choose the namespace (current namespace is used if not set)'
+  flag [:n, :namespace]
+
+  desc 'Describe attach-job here'
+  arg_name '<job name>'
+  command 'attach-job' do |c|
+    c.desc 'Container name (needed if more than one container is running in the pod)'
+    c.flag [:c, :container]
+
+    c.action do |global_options, options, args|
+      K8sKit::Context.new(namespace: global_options[:namespace]).tap do |ctx|
+        ctx.job(args[0]).attach(container: options[:container])
+      end
+    end
+  end
+
+  desc 'Waits until all pods in the namespace are "Ready"'
+  command 'wait-all-pods-ready' do |c|
+    c.desc 'Timeout in seconds'
+    c.default_value '300'
+    c.flag [:t, :timeout]
+
+    c.action do |global_options, options, args|
+      K8sKit::Context.new(namespace: global_options[:namespace]).tap do |ctx|
+        ctx.wait_for_all_pods_ready(timeout: options[:timeout].to_i > 0 ? options[:timeout].to_i : 300)
+      end
+    end
+  end
+
+  pre do |global,command,options,args|
+    # Pre logic here
+    # Return true to proceed; false to abort and not call the
+    # chosen command
+    # Use skips_pre before a command to skip this block
+    # on that command only
+    true
+  end
+
+  post do |global,command,options,args|
+    # Post logic here
+    # Use skips_post before a command to skip this
+    # block on that command only
+  end
+
+  on_error do |exception|
+    # Error logic here
+    # return false to skip default error handling
+    true
+  end
+end
+
+exit App.run(ARGV)
