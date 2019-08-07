@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    k8s_kit (0.0.1)
+    k8s_kit (0.0.2)
       gli (= 2.18.1)
 
 GEM

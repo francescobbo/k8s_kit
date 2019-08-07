@@ -46,6 +46,11 @@ module K8sKit
       print 'Waiting for all pods to be ready...'
       loop do
         statuses = run('get pods -o jsonpath="{.items.*.status.containerStatuses[*].ready}"')
+        if statuses.empty?
+          puts ''
+          raise StandardError, 'No pod could be found in the namespace'
+        end
+
         return unless statuses.include?('false')
 
         if t0 + timeout < Time.now
