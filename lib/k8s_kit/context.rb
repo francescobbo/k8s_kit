@@ -43,14 +43,18 @@ module K8sKit
     def wait_for_all_pods_ready(timeout: 300)
       t0 = Time.now
 
+      print 'Waiting for all pods to be ready...'
       loop do
         statuses = run('get pods -o jsonpath="{.items.*.status.containerStatuses[*].ready}"')
         return unless statuses.include?('false')
 
-        raise StandardError, 'Timeout while waiting for pods to become ready' if t0 + timeout < Time.now
+        if t0 + timeout < Time.now
+          puts ''
+          raise StandardError, 'Timeout while waiting for pods to become ready'
+        end
 
-        puts 'Some pods are not ready yet, retrying...'
-        sleep 5
+        print '.'
+        sleep 2
       end
     end
   end
