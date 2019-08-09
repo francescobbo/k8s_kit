@@ -14,6 +14,7 @@ spec = Gem::Specification.new do |s|
   s.rdoc_options << '--title' << 'k8s_kit' << '--main' << 'README.rdoc' << '-ri'
   s.bindir = 'bin'
   s.executables << 'k8s_kit'
+  s.add_development_dependency('byebug')
   s.add_development_dependency('rake')
   s.add_development_dependency('rdoc')
   s.add_development_dependency('aruba')

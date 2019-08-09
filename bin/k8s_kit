@@ -1,13 +1,6 @@
 #!/usr/bin/env ruby
 require 'gli'
-begin # XXX: Remove this begin/rescue before distributing your app
 require 'k8s_kit'
-rescue LoadError
-  STDERR.puts "In development, you need to use `bundle exec bin/k8s_kit` to run your app"
-  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
-  STDERR.puts "Feel free to remove this message from bin/k8s_kit now"
-  exit 64
-end
 
 class App
   extend GLI::App
@@ -66,7 +59,12 @@ class App
   on_error do |exception|
     # Error logic here
     # return false to skip default error handling
-    true
+    case exception
+    when SystemExit
+      exit exception.status
+    else
+      true
+    end
   end
 end
 
