@@ -1,3 +1,5 @@
+require 'waitutil'
+
 module K8sKit
   class Job
     attr_reader :context, :name
@@ -10,6 +12,13 @@ module K8sKit
     def attach(container:, delete_on_completion: true, exit_on_completion: true)
       pod.wait_until_ready
       pod.logs(container: container, stream: true)
+
+      WaitUtil.wait_for_condition("pod has exit code", 
+                            :timeout_sec => 30,
+                            :delay_sec => 0.5) do
+        pod.exit_code(container: container) != nil
+      end
+
       exit_code = pod.exit_code(container: container)
 
       delete if delete_on_completion

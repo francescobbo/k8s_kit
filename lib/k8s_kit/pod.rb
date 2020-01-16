@@ -21,7 +21,7 @@ module K8sKit
 
     def exit_code(container:)
       json_path = "{ .status.containerStatuses[?(@.name == '#{container}')].state.terminated.exitCode }"
-      context.run("get pod #{name} -o jsonpath=\"#{json_path}\"").to_i
+      Integer(context.run("get pod #{name} -o jsonpath=\"#{json_path}\""))
     rescue StandardError
       nil
     end
