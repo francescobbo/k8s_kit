@@ -3,6 +3,7 @@ PATH
   specs:
     k8s_kit (0.0.6)
       gli (= 2.18.1)
+      waitutil
 
 GEM
   remote: https://rubygems.org/
@@ -43,7 +44,7 @@ GEM
     multi_json (1.13.1)
     multi_test (0.1.2)
     rake (12.3.3)
-    rdoc (6.1.1)
+    rdoc (6.3.2)
     rspec-expectations (3.8.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
@@ -60,7 +61,6 @@ DEPENDENCIES
   k8s_kit!
   rake
   rdoc
-  waitutil
 
 BUNDLED WITH
    2.0.2
